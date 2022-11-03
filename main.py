@@ -60,8 +60,12 @@ class DeleteSubject(QDialog):
         self.setWindowTitle('Удалить предметы')
 
 
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     wnd = MainWindow()
     wnd.show()
     sys.exit(app.exec())
+
+
+if __name__ == '__main__':
+    main()
