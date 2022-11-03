@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>420</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -29,21 +29,21 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="load_table_button">
           <property name="text">
            <string>Загрузить таблицу</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_5">
+         <widget class="QPushButton" name="save_table_button">
           <property name="text">
            <string>Сохранить таблицу</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="clear_table_button">
           <property name="text">
            <string>Очистить таблицу</string>
           </property>
@@ -54,14 +54,17 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
-         <widget class="QPushButton" name="pushButton_4">
+         <widget class="QPushButton" name="add_subjects_button">
+          <property name="accessibleName">
+           <string/>
+          </property>
           <property name="text">
            <string>Добавить предметы</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="delete_subjects_button">
           <property name="text">
            <string>Удалить предметы</string>
           </property>
@@ -74,7 +77,11 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QTableWidget" name="tableWidget"/>
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="accessibleName">
+         <string/>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
