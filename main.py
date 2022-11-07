@@ -2,7 +2,7 @@ import sys
 import csv
 import sqlite3
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QWidget, QPushButton, QTableWidgetItem, QDialog, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QWidget, QPushButton, QTableWidgetItem, QDialog, QFileDialog, QListWidgetItem
 from PyQt5 import QtCore, uic, QtGui
 
 
@@ -71,22 +71,38 @@ class MainWindow(QMainWindow):
 
 
     def add_subjects_button_clicked(self):
-        dlg = AddSubject()
+        dlg = AddSubject(self.SUBJECTS_LIST)
         dlg.exec()
     
     def delete_subjects_button_clicked(self):
         dlg = DeleteSubject()
         dlg.exec()
+    
+    def get_subjects_list(self):
+        return self.SUBJECTS_LIST
 
 
 class AddSubject(QDialog):
-    def __init__(self):
+    def __init__(self, subjects_list):
         super().__init__()
+        self.subjects_list = subjects_list
         self.initUI()
 
     def initUI(self):
         uic.loadUi('edit_subjects.ui', self)
         self.setWindowTitle('Добавить предметы')
+        for subject in self.subjects_list:
+            item = QListWidgetItem()
+            item.setText(subject)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            self.subjects_listwidget.addItem(item)
+        
+    def checked_method(self):
+        checked_items = []
+        for index in range(self.subjects_listwidget.count()):
+            if self.subjects_listwidget.item(index).checkState() == 1:
+                checked_items.append(self.subjects_listwidget.item(index).text())
  
 
 class DeleteSubject(QDialog):
