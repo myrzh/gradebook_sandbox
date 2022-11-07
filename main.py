@@ -15,12 +15,21 @@ class MainWindow(QMainWindow):
         uic.loadUi('main_window.ui', self)
         self.setWindowTitle('JournalSandbox')
         self.show_table('default_table.csv')
-        self.subjects_db = sqlite3.connect("subjects.sqlite")
+        self.subjects_db_con = sqlite3.connect("subjects.sqlite")
+
+        self.db_update_subjects()
 
         self.load_table_button.clicked.connect(self.load_table)
         self.save_table_button.clicked.connect(self.save_table)
         self.add_subjects_button.clicked.connect(self.add_subjects_button_clicked)
         self.delete_subjects_button.clicked.connect(self.delete_subjects_button_clicked)
+
+    def db_update_subjects(self):
+        cur = self.subjects_db_con.cursor()
+        result = cur.execute("SELECT * FROM subjects_table").fetchall()
+        self.SUBJECTS_LIST = [i[1] for i in result]
+        print(self.SUBJECTS_LIST)
+
 
     def show_table(self, table_name):
         with open(table_name, encoding="utf8") as csvfile:
