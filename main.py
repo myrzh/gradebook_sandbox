@@ -72,7 +72,8 @@ class MainWindow(QMainWindow):
 
     def add_subjects_button_clicked(self):
         dlg = AddSubject(self.SUBJECTS_LIST)
-        dlg.exec()
+        if dlg.exec_():
+            print(dlg.checked_method())
     
     def delete_subjects_button_clicked(self):
         dlg = DeleteSubject()
@@ -97,13 +98,13 @@ class AddSubject(QDialog):
             item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
             item.setCheckState(QtCore.Qt.Unchecked)
             self.subjects_listwidget.addItem(item)
-        
+
     def checked_method(self):
         checked_items = []
         for index in range(self.subjects_listwidget.count()):
-            if self.subjects_listwidget.item(index).checkState() == 1:
+            if self.subjects_listwidget.item(index).checkState() == 2:
                 checked_items.append(self.subjects_listwidget.item(index).text())
- 
+        return checked_items
 
 class DeleteSubject(QDialog):
     def __init__(self):
