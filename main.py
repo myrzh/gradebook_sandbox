@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         cur = self.subjects_db_con.cursor()
         result = cur.execute("SELECT * FROM subjects_table").fetchall()
         self.SUBJECTS_LIST = [i[1] for i in result]
-        print(self.SUBJECTS_LIST)
+        # print(self.SUBJECTS_LIST)
 
 
     def show_table(self, table_name):
