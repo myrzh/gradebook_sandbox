@@ -14,15 +14,21 @@ class MainWindow(QMainWindow):
     def initUI(self):
         uic.loadUi('main_window.ui', self)
         self.setWindowTitle('JournalSandbox')
-        self.show_table('default_table.csv')
+        self.clear_table()
         self.subjects_db_con = sqlite3.connect("subjects.sqlite")
 
         self.db_update_subjects()
 
         self.load_table_button.clicked.connect(self.load_table)
-        self.save_table_button.clicked.connect(self.save_table)
+        self.save_table_as_button.clicked.connect(self.save_table_as)
+        self.clear_table_button.clicked.connect(self.clear_table)
         self.add_subjects_button.clicked.connect(self.add_subjects_button_clicked)
         self.delete_subjects_button.clicked.connect(self.delete_subjects_button_clicked)
+        self.add_column_button.clicked.connect(self.add_column)
+        self.delete_column_button.clicked.connect(self.delete_column)
+
+    def clear_table(self):
+        self.show_table('default_table.csv')
 
     def db_update_subjects(self):
         cur = self.subjects_db_con.cursor()
@@ -33,7 +39,7 @@ class MainWindow(QMainWindow):
 
     def show_table(self, table_name):
         with open(table_name, encoding="utf8") as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            reader = csv.reader(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             title = next(reader)
             self.main_table.setColumnCount(len(title))
             self.main_table.setHorizontalHeaderLabels(title)
@@ -49,26 +55,37 @@ class MainWindow(QMainWindow):
     def load_table(self):
         path = QFileDialog.getOpenFileName(self, 'Загрузить таблицу', '',
                                            'Таблица CSV (*.csv)')[0]
-        if path:
-            self.show_table(path)
+        if not path:
+            return
+        self.show_table(path)
     
-    def save_table(self):
-        path = QFileDialog.getSaveFileName(self, 'Сохранить таблицу', '',
+    def save_table_as(self):
+        path = QFileDialog.getSaveFileName(self, 'Сохранить таблицу как...', '',
                                            'Таблица CSV (*.csv)')[0]
-        if path:
-            with open(str(path), 'wb') as stream:
-                writer = csv.writer(stream)
-                for row in range(self.main_table.rowCount()):
-                    rowdata = []
-                    for column in range(self.main_table.columnCount()):
-                        item = self.main_table.item(row, column)
-                        if item is not None:
-                            rowdata.append(
-                                str(item.text()).encode('utf8'))
-                        else:
-                            rowdata.append('')
-                    writer.writerow(rowdata)
+        if not path:
+            return
+        with open(path, 'w', newline='', encoding="utf8") as csvfile:
+            writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)   
+            writer.writerow(
+                [self.main_table.horizontalHeaderItem(i).text()
+                for i in range(self.main_table.columnCount())])
+            for i in range(self.main_table.rowCount()):
+                row = []
+                for j in range(self.main_table.columnCount()):
+                    item = self.main_table.item(i, j)
+                    if item is not None:
+                        row.append(item.text())
+                writer.writerow(row)
 
+    def add_column(self):
+        columnPosition = self.main_table.columnCount()
+        self.main_table.insertColumn(columnPosition - 1)
+        self.main_table.horizontalHeaderItem(columnPosition - 1).setText('')
+        # TODO: fix numbered headers issue
+    
+    def delete_column(self):
+        pass
+        # TODO: similar to add_column method
 
     def add_subjects_button_clicked(self):
         dlg = AddSubject(self.SUBJECTS_LIST)

@@ -36,13 +36,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="save_table_button">
-          <property name="text">
-           <string>Сохранить таблицу</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="save_table_as_button">
           <property name="text">
            <string>Сохранить таблицу как...</string>
@@ -74,6 +67,20 @@
          <widget class="QPushButton" name="delete_subjects_button">
           <property name="text">
            <string>Удалить предметы</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="add_column_button">
+          <property name="text">
+           <string>Добавить столбец</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="delete_column_button">
+          <property name="text">
+           <string>Удалить столбец</string>
           </property>
          </widget>
         </item>
