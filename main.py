@@ -2,7 +2,7 @@ import sys
 import csv
 import sqlite3
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog, QMessageBox
 from PyQt5.QtWidgets import QTableWidgetItem, QListWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QStyledItemDelegate
 from PyQt5 import QtCore, uic
@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
     def initUI(self):
         uic.loadUi('assets/main_window.ui', self)
         self.setWindowTitle('JournalSandbox')
-        self.clear_table()
+        self.show_table('assets/default_table.csv')
         self.subjects_db_con = sqlite3.connect("assets/subjects.sqlite")
 
         self.db_update_subjects()
@@ -37,13 +37,24 @@ class MainWindow(QMainWindow):
         self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
         # self.main_table.setItemDelegateForColumn(0, rw_delegate)
 
+        self.align_table()
+
+    def clear_table(self):
+        dlg = QMessageBox()
+        dlg.setWindowTitle("Подтверждение")
+        dlg.setText("Вы уверены, что хотите очистить таблицу?")
+        dlg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        # dlg.setIcon(QMessageBox.Question)
+        button = dlg.exec()
+        if button == QMessageBox.Ok:
+            self.show_table('assets/default_table.csv')
+            self.align_table()
+
+    def align_table(self):
         self.main_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.main_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
-
-    def clear_table(self):
-        self.show_table('assets/default_table.csv')
-
+    
     def db_update_subjects(self):
         cur = self.subjects_db_con.cursor()
         result = cur.execute("SELECT * FROM subjects_table").fetchall()
@@ -140,7 +151,7 @@ class MainWindow(QMainWindow):
                     self.main_table.setItem(
                         i, j, QTableWidgetItem(elem))
 
-        self.main_table.resizeColumnsToContents()
+        self.align_table()
 
     def load_table(self):
         path = QFileDialog.getOpenFileName(self, 'Загрузить таблицу', '',
@@ -175,12 +186,16 @@ class MainWindow(QMainWindow):
         self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.rw_delegate)
         self.main_table.insertColumn(self.main_table.columnCount() - 1)
         self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
+        self.align_table()
         # self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
         # TODO: fix numbered headers issue
     
     def delete_column(self):
-        pass
-        # TODO: similar to add_column method
+        if self.main_table.columnCount() > 8:
+            self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.rw_delegate)
+            self.main_table.removeColumn(self.main_table.columnCount() - 2)
+            self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
+            self.align_table()
 
     def add_subjects(self):
         dlg = AddSubject(self.SUBJECTS_LIST)
