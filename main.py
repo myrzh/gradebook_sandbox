@@ -185,10 +185,10 @@ class MainWindow(QMainWindow):
         # print(self.main_table.horizontalHeaderItem(columnPosition - 2).text())
         self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.rw_delegate)
         self.main_table.insertColumn(self.main_table.columnCount() - 1)
+        self.main_table.setHorizontalHeaderItem(self.main_table.columnCount() - 2, QTableWidgetItem(''))
         self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
         self.align_table()
         # self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
-        # TODO: fix numbered headers issue
     
     def delete_column(self):
         if self.main_table.columnCount() > 8:
