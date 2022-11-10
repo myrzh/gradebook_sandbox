@@ -22,8 +22,8 @@ class MainWindow(QMainWindow):
         self.load_table_button.clicked.connect(self.load_table)
         self.save_table_as_button.clicked.connect(self.save_table_as)
         self.clear_table_button.clicked.connect(self.clear_table)
-        self.add_subjects_button.clicked.connect(self.add_subjects_button_clicked)
-        self.delete_subjects_button.clicked.connect(self.delete_subjects_button_clicked)
+        self.add_subjects_button.clicked.connect(self.add_subjects)
+        self.delete_subjects_button.clicked.connect(self.delete_subjects)
         self.add_column_button.clicked.connect(self.add_column)
         self.delete_column_button.clicked.connect(self.delete_column)
 
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         if not path:
             return
         self.show_table(path)
-    
+
     def save_table_as(self):
         path = QFileDialog.getSaveFileName(self, 'Сохранить таблицу как...', '',
                                            'Таблица CSV (*.csv)')[0]
@@ -81,22 +81,36 @@ class MainWindow(QMainWindow):
         print(self.main_table.columnCount())
         # print(self.main_table.horizontalHeaderItem(columnPosition - 2).text())
         self.main_table.insertColumn(self.main_table.columnCount() - 1)
-        self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
-        # print(label)
+        # self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
         # TODO: fix numbered headers issue
     
     def delete_column(self):
         pass
         # TODO: similar to add_column method
 
-    def add_subjects_button_clicked(self):
+    def add_subjects(self):
         dlg = AddSubject(self.SUBJECTS_LIST)
         if dlg.exec_():
-            print(dlg.checked_method())
-    
-    def delete_subjects_button_clicked(self):
-        dlg = DeleteSubject()
-        dlg.exec()
+            used_subjects = []
+            for index in range(0, self.main_table.rowCount()):
+                used_subjects.append(self.main_table.item(index, 0).text())
+            # print(used_subjects)
+
+            subjects_to_add = dlg.checked_method()
+            # print(subjects_to_add)
+            for subject in subjects_to_add:
+                if subject not in used_subjects:
+                    self.main_table.insertRow(self.main_table.rowCount())
+                    item = QTableWidgetItem(subject)   # create a new Item
+                    self.main_table.setItem(self.main_table.rowCount() - 1, 0, item)
+
+
+    def delete_subjects(self):
+        dlg = DeleteSubject(self.SUBJECTS_LIST)
+        if dlg.exec_():
+            subjects_to_delete = dlg.checked_method()
+            print(subjects_to_delete)
+            # TODO: subjects deletion
     
     def get_subjects_list(self):
         return self.SUBJECTS_LIST
@@ -106,17 +120,16 @@ class AddSubject(QDialog):
     def __init__(self, subjects_list):
         super().__init__()
         self.subjects_list = subjects_list
-        self.initUI()
-
-    def initUI(self):
         uic.loadUi('edit_subjects.ui', self)
-        self.setWindowTitle('Добавить предметы')
+
         for subject in self.subjects_list:
             item = QListWidgetItem()
             item.setText(subject)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
             item.setCheckState(QtCore.Qt.Unchecked)
             self.subjects_listwidget.addItem(item)
+        
+        self.setWindowTitle('Добавить предметы')
 
     def checked_method(self):
         checked_items = []
@@ -125,13 +138,9 @@ class AddSubject(QDialog):
                 checked_items.append(self.subjects_listwidget.item(index).text())
         return checked_items
 
-class DeleteSubject(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-    
-    def initUI(self):
-        uic.loadUi('edit_subjects.ui', self)
+class DeleteSubject(AddSubject):
+    def __init__(self, subjects_list):
+        super().__init__(subjects_list)
         self.setWindowTitle('Удалить предметы')
 
 
