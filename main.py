@@ -3,7 +3,7 @@ import csv
 import sqlite3
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog
-from PyQt5.QtWidgets import QTableWidgetItem, QListWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem, QListWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QStyledItemDelegate
 from PyQt5 import QtCore, uic
 
@@ -28,12 +28,18 @@ class MainWindow(QMainWindow):
         self.delete_subjects_button.clicked.connect(self.delete_subjects)
         self.add_column_button.clicked.connect(self.add_column)
         self.delete_column_button.clicked.connect(self.delete_column)
+        self.main_table.cellClicked.connect(self.update_final_marks)
         self.update_final_marks_button.clicked.connect(self.update_final_marks)
 
-        r_delegate = ReadOnlyDelegate(self)
-        rw_delegate = ReadWriteDelegate(self)
-        self.main_table.setItemDelegateForColumn(0, r_delegate)
-        self.main_table.setItemDelegateForColumn(0, rw_delegate)
+        self.r_delegate = ReadOnlyDelegate(self)
+        self.rw_delegate = ReadWriteDelegate(self)
+        self.main_table.setItemDelegateForColumn(0, self.r_delegate)
+        self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
+        # self.main_table.setItemDelegateForColumn(0, rw_delegate)
+
+        self.main_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.main_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
 
     def clear_table(self):
         self.show_table('default_table.csv')
@@ -93,8 +99,9 @@ class MainWindow(QMainWindow):
             coefficients.append(float(exp[temp_index + 1:]))
         denominator = sum(coefficients)
 
+        bad_endings = [f'.{i}' for i in range(0, 10)]
         result = str(round(numerator / denominator, 2))
-        if result.endswith('.0'):
+        if result[-2:] in bad_endings:
             result += '0'
         return result
 
@@ -105,9 +112,13 @@ class MainWindow(QMainWindow):
             for row_index in range(0, rows):
                 marks_list = []
                 for column_index in range(1, columns - 1):
-                    current_cell = self.main_table.item(row_index, column_index).text()
+                    # print(row_index, column_index)
+                    if self.main_table.item(row_index, column_index) is None:
+                        current_cell = ''
+                    else:
+                        current_cell = self.main_table.item(row_index, column_index).text()
                     marks_list.append(current_cell)
-                print(marks_list)
+                # print(marks_list)
                 final_mark = self.calculate_final_mark(marks_list)
                 item = QTableWidgetItem(final_mark)
                 self.main_table.setItem(row_index, columns - 1, item)
@@ -159,9 +170,11 @@ class MainWindow(QMainWindow):
                 writer.writerow(row)
 
     def add_column(self):
-        print(self.main_table.columnCount())
+        # print(self.main_table.columnCount())
         # print(self.main_table.horizontalHeaderItem(columnPosition - 2).text())
+        self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.rw_delegate)
         self.main_table.insertColumn(self.main_table.columnCount() - 1)
+        self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
         # self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
         # TODO: fix numbered headers issue
     
