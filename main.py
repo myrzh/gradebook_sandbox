@@ -14,10 +14,10 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        uic.loadUi('main_window.ui', self)
+        uic.loadUi('assets/main_window.ui', self)
         self.setWindowTitle('JournalSandbox')
         self.clear_table()
-        self.subjects_db_con = sqlite3.connect("subjects.sqlite")
+        self.subjects_db_con = sqlite3.connect("assets/subjects.sqlite")
 
         self.db_update_subjects()
 
@@ -219,7 +219,7 @@ class AddSubject(QDialog):
     def __init__(self, subjects_list: list):
         super().__init__()
         self.subjects_list = subjects_list
-        uic.loadUi('edit_subjects.ui', self)
+        uic.loadUi('assets/edit_subjects.ui', self)
 
         for subject in self.subjects_list:
             item = QListWidgetItem()
