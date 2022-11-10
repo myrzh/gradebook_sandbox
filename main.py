@@ -2,8 +2,10 @@ import sys
 import csv
 import sqlite3
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QWidget, QPushButton, QTableWidgetItem, QDialog, QFileDialog, QListWidgetItem
-from PyQt5 import QtCore, uic, QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog
+from PyQt5.QtWidgets import QTableWidgetItem, QListWidgetItem
+from PyQt5.QtWidgets import QStyledItemDelegate
+from PyQt5 import QtCore, uic
 
 
 class MainWindow(QMainWindow):
@@ -27,6 +29,11 @@ class MainWindow(QMainWindow):
         self.add_column_button.clicked.connect(self.add_column)
         self.delete_column_button.clicked.connect(self.delete_column)
 
+        r_delegate = ReadOnlyDelegate(self)
+        rw_delegate = ReadWriteDelegate(self)
+        self.main_table.setItemDelegateForColumn(0, r_delegate)
+        self.main_table.setItemDelegateForColumn(0, rw_delegate)
+
     def clear_table(self):
         self.show_table('default_table.csv')
 
@@ -37,6 +44,10 @@ class MainWindow(QMainWindow):
         # print(self.SUBJECTS_LIST)
 
 
+    def update_marks(self):
+        pass
+
+    
     def show_table(self, table_name):
         with open(table_name, encoding="utf8") as csvfile:
             reader = csv.reader(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -92,11 +103,12 @@ class MainWindow(QMainWindow):
         dlg = AddSubject(self.SUBJECTS_LIST)
         if dlg.exec_():
             used_subjects = []
-            for index in range(0, self.main_table.rowCount()):
-                used_subjects.append(self.main_table.item(index, 0).text())
+            if self.main_table.rowCount() > 0:
+                for index in range(0, self.main_table.rowCount()):
+                    used_subjects.append(self.main_table.item(index, 0).text())
             # print(used_subjects)
 
-            subjects_to_add = dlg.checked_method()
+            subjects_to_add = dlg.get_checked_subjects()
             # print(subjects_to_add)
             for subject in subjects_to_add:
                 if subject not in used_subjects:
@@ -108,9 +120,13 @@ class MainWindow(QMainWindow):
     def delete_subjects(self):
         dlg = DeleteSubject(self.SUBJECTS_LIST)
         if dlg.exec_():
-            subjects_to_delete = dlg.checked_method()
-            print(subjects_to_delete)
-            # TODO: subjects deletion
+            subjects_to_delete = dlg.get_checked_subjects()
+            # print(subjects_to_delete)
+            if self.main_table.rowCount() > 0:
+                for index in range(self.main_table.rowCount() - 1, -1, -1):
+                    temp_subject = self.main_table.item(index, 0).text()
+                    if temp_subject in subjects_to_delete:
+                        self.main_table.removeRow(index)
     
     def get_subjects_list(self):
         return self.SUBJECTS_LIST
@@ -131,7 +147,7 @@ class AddSubject(QDialog):
         
         self.setWindowTitle('Добавить предметы')
 
-    def checked_method(self):
+    def get_checked_subjects(self):
         checked_items = []
         for index in range(self.subjects_listwidget.count()):
             if self.subjects_listwidget.item(index).checkState() == 2:
@@ -142,6 +158,15 @@ class DeleteSubject(AddSubject):
     def __init__(self, subjects_list):
         super().__init__(subjects_list)
         self.setWindowTitle('Удалить предметы')
+
+
+class ReadOnlyDelegate(QStyledItemDelegate):
+    def createEditor(self, parent, option, index):
+        return
+
+
+class ReadWriteDelegate(QStyledItemDelegate):
+    pass
 
 
 def main():
