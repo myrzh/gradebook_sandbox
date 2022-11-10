@@ -78,9 +78,11 @@ class MainWindow(QMainWindow):
                 writer.writerow(row)
 
     def add_column(self):
-        columnPosition = self.main_table.columnCount()
-        self.main_table.insertColumn(columnPosition - 1)
-        self.main_table.horizontalHeaderItem(columnPosition - 1).setText('')
+        print(self.main_table.columnCount())
+        # print(self.main_table.horizontalHeaderItem(columnPosition - 2).text())
+        self.main_table.insertColumn(self.main_table.columnCount() - 1)
+        self.main_table.horizontalHeaderItem(self.main_table.columnCount() - 2).setText('')
+        # print(label)
         # TODO: fix numbered headers issue
     
     def delete_column(self):
