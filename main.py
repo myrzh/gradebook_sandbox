@@ -252,6 +252,7 @@ class AddSubject(QDialog):
                 checked_items.append(self.subjects_listwidget.item(index).text())
         return checked_items
 
+
 class DeleteSubject(AddSubject):
     def __init__(self, subjects_list: list):
         super().__init__(subjects_list)
