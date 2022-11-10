@@ -49,6 +49,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="update_final_marks_button">
+          <property name="text">
+           <string>Обновить итоговые оценки</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>

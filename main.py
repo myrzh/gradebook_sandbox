@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         self.delete_subjects_button.clicked.connect(self.delete_subjects)
         self.add_column_button.clicked.connect(self.add_column)
         self.delete_column_button.clicked.connect(self.delete_column)
+        self.update_final_marks_button.clicked.connect(self.update_final_marks)
 
         r_delegate = ReadOnlyDelegate(self)
         rw_delegate = ReadWriteDelegate(self)
@@ -59,6 +60,8 @@ class MainWindow(QMainWindow):
             astro_index = cell_data.find('*')
             before_astro = cell_data[:astro_index]
             after_astro = cell_data[astro_index + 1:]
+            if after_astro.startswith('.'):
+                return False
             try:
                 int(before_astro)
                 float(after_astro)
@@ -70,9 +73,17 @@ class MainWindow(QMainWindow):
 
     def calculate_final_mark(self, marks_list: list):
         marks_list = [''.join(i.split()) for i in marks_list]
-        for cell in marks_list:
-            if not self.verify_cell(cell):
+        marks_list = list(filter(None, marks_list))
+
+        if not marks_list:
+            return ''
+        for cell_data in marks_list:
+            if not self.verify_cell(cell_data):
                 return 'X*XX'
+        
+        for index, item in enumerate(marks_list):
+            if '*' not in item:
+                marks_list[index] = marks_list[index] + '*1'
         
         numerator = eval('+'.join(marks_list))
         coefficients = []
@@ -88,7 +99,19 @@ class MainWindow(QMainWindow):
         return result
 
     def update_final_marks(self):
-        pass 
+        rows = self.main_table.rowCount()
+        columns = self.main_table.columnCount()
+        if rows != 0:
+            for row_index in range(0, rows):
+                marks_list = []
+                for column_index in range(1, columns - 1):
+                    current_cell = self.main_table.item(row_index, column_index).text()
+                    marks_list.append(current_cell)
+                print(marks_list)
+                final_mark = self.calculate_final_mark(marks_list)
+                item = QTableWidgetItem(final_mark)
+                self.main_table.setItem(row_index, columns - 1, item)
+
 
     def show_table(self, table_name: str):
         with open(table_name, encoding="utf8") as csvfile:
