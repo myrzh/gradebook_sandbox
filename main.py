@@ -43,24 +43,69 @@ class MainWindow(QMainWindow):
         self.SUBJECTS_LIST = [i[1] for i in result]
         # print(self.SUBJECTS_LIST)
 
+    def verify_cell(self, cell_data: str):
+        allowed_symbols = '0123456789.*'
 
-    def update_marks(self):
-        pass
+        for symb in cell_data:
+            if symb not in allowed_symbols:
+                return False
+        
+        if '*' not in cell_data:
+            try:
+                int(cell_data)
+            except ValueError:
+                return False
+        elif '*' in cell_data:
+            astro_index = cell_data.find('*')
+            before_astro = cell_data[:astro_index]
+            after_astro = cell_data[astro_index + 1:]
+            try:
+                int(before_astro)
+                float(after_astro)
+            except ValueError:
+                return False
+        
+        return True
 
-    
-    def show_table(self, table_name):
+
+    def calculate_final_mark(self, marks_list: list):
+        marks_list = [''.join(i.split()) for i in marks_list]
+        for cell in marks_list:
+            if not self.verify_cell(cell):
+                return 'X*XX'
+        
+        numerator = eval('+'.join(marks_list))
+        coefficients = []
+
+        for exp in marks_list:
+            temp_index = exp.find('*')
+            coefficients.append(float(exp[temp_index + 1:]))
+        denominator = sum(coefficients)
+
+        result = str(round(numerator / denominator, 2))
+        if result.endswith('.0'):
+            result += '0'
+        return result
+
+    def update_final_marks(self):
+        pass 
+
+    def show_table(self, table_name: str):
         with open(table_name, encoding="utf8") as csvfile:
             reader = csv.reader(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             title = next(reader)
+
             self.main_table.setColumnCount(len(title))
             self.main_table.setHorizontalHeaderLabels(title)
             self.main_table.setRowCount(0)
+
             for i, row in enumerate(reader):
                 self.main_table.setRowCount(
                     self.main_table.rowCount() + 1)
                 for j, elem in enumerate(row):
                     self.main_table.setItem(
                         i, j, QTableWidgetItem(elem))
+
         self.main_table.resizeColumnsToContents()
 
     def load_table(self):
@@ -75,11 +120,13 @@ class MainWindow(QMainWindow):
                                            'Таблица CSV (*.csv)')[0]
         if not path:
             return
+
         with open(path, 'w', newline='', encoding="utf8") as csvfile:
             writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)   
             writer.writerow(
                 [self.main_table.horizontalHeaderItem(i).text()
                 for i in range(self.main_table.columnCount())])
+
             for i in range(self.main_table.rowCount()):
                 row = []
                 for j in range(self.main_table.columnCount()):
@@ -133,7 +180,7 @@ class MainWindow(QMainWindow):
 
 
 class AddSubject(QDialog):
-    def __init__(self, subjects_list):
+    def __init__(self, subjects_list: list):
         super().__init__()
         self.subjects_list = subjects_list
         uic.loadUi('edit_subjects.ui', self)
@@ -155,7 +202,7 @@ class AddSubject(QDialog):
         return checked_items
 
 class DeleteSubject(AddSubject):
-    def __init__(self, subjects_list):
+    def __init__(self, subjects_list: list):
         super().__init__(subjects_list)
         self.setWindowTitle('Удалить предметы')
 
