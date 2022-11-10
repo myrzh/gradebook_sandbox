@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
 
     def clear_table(self):
-        self.show_table('default_table.csv')
+        self.show_table('assets/default_table.csv')
 
     def db_update_subjects(self):
         cur = self.subjects_db_con.cursor()
