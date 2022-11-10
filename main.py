@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         self.add_column_button.clicked.connect(self.add_column)
         self.delete_column_button.clicked.connect(self.delete_column)
         self.main_table.cellClicked.connect(self.update_final_marks)
-        self.update_final_marks_button.clicked.connect(self.update_final_marks)
+        # self.update_final_marks_button.clicked.connect(self.update_final_marks)
 
         self.r_delegate = ReadOnlyDelegate(self)
         self.rw_delegate = ReadWriteDelegate(self)
@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
             return ''
         for cell_data in marks_list:
             if not self.verify_cell(cell_data):
-                return 'X*XX'
+                return 'X.XX'
         
         for index, item in enumerate(marks_list):
             if '*' not in item:
