@@ -1,4 +1,4 @@
-# yandex_qt_project
+# gradebook_sandbox
 ## GradebookSandbox – Электронный журнал-песочница
 GradebookSandbox – простое приложение для прогнозирования оценок в школе.
 ### Особенности
