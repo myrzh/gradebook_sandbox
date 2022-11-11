@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         uic.loadUi('assets/main_window.ui', self)
-        self.setWindowTitle('JournalSandbox')
+        self.setWindowTitle('GradebookSandbox')
         self.show_table('assets/default_table.csv')
         self.subjects_db_con = sqlite3.connect("assets/subjects.sqlite")
 
@@ -150,6 +150,16 @@ class MainWindow(QMainWindow):
                 for j, elem in enumerate(row):
                     self.main_table.setItem(
                         i, j, QTableWidgetItem(elem))
+            
+            rows = self.main_table.rowCount()
+            columns = self.main_table.columnCount()
+            if rows != 0:
+                for row_index in range(0, rows):
+                    for column_index in range(0, columns - 1):
+                        item = self.main_table.item(row_index, column_index)
+                        if item is not None:
+                            if '.' in item.text():
+                                item.setText('')
 
         self.align_table()
 
