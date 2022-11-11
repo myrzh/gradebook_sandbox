@@ -175,6 +175,12 @@ class MainWindow(QMainWindow):
                                            'Таблица CSV (*.csv)')[0]
         if not path:
             return
+        if path.endswith('default_table.csv'):
+            dlg = QMessageBox()
+            dlg.setWindowTitle("Ошибка")
+            dlg.setText("Недопустимое имя файла.")
+            dlg.exec()
+            return
 
         with open(path, 'w', newline='', encoding="utf8") as csvfile:
             writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)   
