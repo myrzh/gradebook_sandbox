@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
                     for column_index in range(0, columns - 1):
                         item = self.main_table.item(row_index, column_index)
                         if item is not None:
-                            if '.' in item.text():
+                            if '.' in item.text() and '*' not in item.text():
                                 item.setText('')
                         # subject_id = self.cur.execute("SELECT id FROM subjects_table WHERE name=").fetchall()
                         # TODO: tooltip on mouseover (subject type)
