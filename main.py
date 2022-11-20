@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('GradebookSandbox')
         self.show_table('assets/default_table.csv')
         self.subjects_db_con = sqlite3.connect("assets/subjects.sqlite")
+        self.cur = self.subjects_db_con.cursor()
 
         self.db_update_subjects()
 
@@ -56,8 +57,7 @@ class MainWindow(QMainWindow):
         self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
     
     def db_update_subjects(self):
-        cur = self.subjects_db_con.cursor()
-        result = cur.execute("SELECT * FROM subjects_table").fetchall()
+        result = self.cur.execute("SELECT * FROM subjects_table").fetchall()
         self.SUBJECTS_LIST = [i[1] for i in result]
         # print(self.SUBJECTS_LIST)
 
@@ -160,6 +160,8 @@ class MainWindow(QMainWindow):
                         if item is not None:
                             if '.' in item.text():
                                 item.setText('')
+                        # subject_id = self.cur.execute("SELECT id FROM subjects_table WHERE name=").fetchall()
+                        # TODO: tooltip on mouseover (subject type)
 
         self.align_table()
 
@@ -213,7 +215,7 @@ class MainWindow(QMainWindow):
             self.main_table.setItemDelegateForColumn(self.main_table.columnCount() - 1, self.r_delegate)
             self.align_table()
 
-    def add_subjects(self):
+    def add_subjects(self): 
         dlg = AddSubject(self.SUBJECTS_LIST)
         if dlg.exec_():
             used_subjects = []
