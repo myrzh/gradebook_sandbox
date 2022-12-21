@@ -2,10 +2,10 @@ import sys
 import csv
 import sqlite3
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog, QMessageBox
-from PyQt5.QtWidgets import QTableWidgetItem, QListWidgetItem, QHeaderView
-from PyQt5.QtWidgets import QStyledItemDelegate
-from PyQt5 import QtCore, uic
+from PyQt6.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QTableWidgetItem, QListWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QStyledItemDelegate
+from PyQt6 import QtCore, uic
 
 
 class MainWindow(QMainWindow):
@@ -52,9 +52,10 @@ class MainWindow(QMainWindow):
             self.align_table()
 
     def align_table(self):
-        self.main_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.main_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
+        pass
+        # self.main_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # self.main_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        # self.main_table.horizontalHeader().setSectionResizeMode(self.main_table.columnCount() - 1, QHeaderView.ResizeToContents)
     
     def db_update_subjects(self):
         result = self.cur.execute("SELECT * FROM subjects_table").fetchall()
